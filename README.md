@@ -35,3 +35,8 @@ After upload:
 5. On Android Chrome, remove any old home-screen shortcut, then add the site again.
 
 Note: the first load can still take a while while FLéX builds its browser cache and IndexedDB data. Later loads should be faster.
+
+
+## Static data export for faster GitHub Pages loading
+
+After uploading this build, open the hosted app, go to **Settings → Hosted static data export**, and click **Build/download hosted static data JSON**. Upload the generated `data/` JSON files into this repo's `/data` folder. This lets the hosted app load static repo JSON instead of rebuilding from PokéAPI.
