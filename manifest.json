@@ -1,0 +1,25 @@
+{
+  "name": "FLéX: FireRed / LeafGreen Living Dex",
+  "short_name": "FLéX",
+  "description": "Pokémon FireRed / LeafGreen + Gen 3 Living Dex Tracker",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "./assets/icons/flex_icon_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./assets/icons/flex_icon_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
