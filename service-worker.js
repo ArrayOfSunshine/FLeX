@@ -1,53 +1,12 @@
-const FLEX_CACHE = 'flex-hosted-v1';
-const CORE_ASSETS = [
-  './',
-  './index.html',
-  './manifest.json',
-  './assets/icons/flex_icon_192.png',
-  './assets/icons/flex_icon_512.png',
-  './assets/maps/kanto_map.jpg',
-  './assets/maps/sevii_123_map.jpg',
-  './assets/maps/sevii_45_map.jpg',
-  './assets/maps/sevii_67_map.jpg'
-];
+# FLéX hosted static data
 
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(FLEX_CACHE).then(cache => cache.addAll(CORE_ASSETS)).then(() => self.skipWaiting())
-  );
-});
+Use Settings → Hosted static data export → Build/download hosted static data JSON in the app. Upload the generated JSON files into this folder.
 
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(key => key !== FLEX_CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim())
-  );
-});
+Expected generated files:
 
-self.addEventListener('fetch', event => {
-  const req = event.request;
-  if (req.method !== 'GET') return;
-  const url = new URL(req.url);
-  if (url.origin !== self.location.origin) return;
-
-  if (req.mode === 'navigate') {
-    event.respondWith(
-      fetch(req).then(res => {
-        const copy = res.clone();
-        caches.open(FLEX_CACHE).then(cache => cache.put('./index.html', copy));
-        return res;
-      }).catch(() => caches.match('./index.html'))
-    );
-    return;
-  }
-
-  event.respondWith(
-    caches.match(req).then(cached => {
-      if (cached) return cached;
-      return fetch(req).then(res => {
-        const copy = res.clone();
-        caches.open(FLEX_CACHE).then(cache => cache.put(req, copy));
-        return res;
-      });
-    })
-  );
-});
+- static_data_manifest.json
+- moves_gen3.json
+- move_learners_gen3.json
+- abilities_gen3.json
+- encounters_leafgreen.json
+- encounters_firered.json
