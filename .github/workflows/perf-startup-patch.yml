@@ -1,0 +1,43 @@
+name: Apply startup performance patch
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - perf/cleanup-initial-load
+    paths:
+      - tools/perf_patch_simple.py
+      - .github/workflows/perf-startup-patch.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: perf/cleanup-initial-load
+
+      - name: Apply startup performance patch
+        run: python3 tools/perf_patch_simple.py
+
+      - name: Syntax check JavaScript
+        run: |
+          node --check assets/js/04-app-main.js
+          node --check assets/js/34-hosted-json-repair.js
+          node --check service-worker.js
+
+      - name: Commit generated startup performance changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/js/04-app-main.js assets/js/34-hosted-json-repair.js service-worker.js
+          if git diff --cached --quiet; then
+            echo "No generated changes to commit."
+          else
+            git commit -m "Improve initial load performance"
+            git push origin HEAD:perf/cleanup-initial-load
+          fi
