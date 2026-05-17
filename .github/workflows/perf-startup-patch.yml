@@ -41,3 +41,5 @@ jobs:
             git commit -m "Improve initial load performance"
             git push origin HEAD:perf/cleanup-initial-load
           fi
+
+# trigger: 2026-05-17 startup performance patch
