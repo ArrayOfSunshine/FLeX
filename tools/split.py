@@ -1,5 +1,6 @@
 from pathlib import Path
 import re,base64,json
+# no-op update to trigger split-assets workflow
 root=Path(__file__).resolve().parents[1]
 idx=root/'index.html'; html=idx.read_text(encoding='utf-8')
 if './assets/js/' in html:
