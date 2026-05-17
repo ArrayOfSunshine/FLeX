@@ -1,0 +1,17 @@
+
+  .locationMapToolbar,.showMapButton{display:none!important}
+  .locationTownMapPanel{border:1px solid var(--version-border,var(--border));border-radius:14px;background:#fff;margin:8px 0 12px 0;overflow:hidden;box-shadow:0 2px 8px rgba(15,23,42,.06)}
+  .locationTownMapPanel>summary{cursor:pointer;list-style:none;padding:10px 12px;font-weight:700;color:var(--version-strong,#1d4ed8);background:var(--version-soft,#eff6ff);display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .locationTownMapPanel>summary::-webkit-details-marker{display:none}
+  .locationTownMapPanel>summary:before{content:"▸";color:var(--muted);margin-right:6px}
+  .locationTownMapPanel[open]>summary:before{content:"▾"}
+  .locationTownMapInner{padding:10px;border-top:1px solid var(--border)}
+  .inlineTownMapFrame{position:relative;width:100%;max-width:860px;margin:0 auto;aspect-ratio:4/3;border:1px solid #7897b8;border-radius:12px;overflow:hidden;background:#8fd3ff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
+  .inlineTownMapFrame img{display:block;width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
+  .inlineTownMapMarker{position:absolute;width:24px;height:24px;border:2px solid rgba(17,24,39,.78);border-radius:999px;background:linear-gradient(rgba(239,68,68,.70) 0 46%,rgba(17,24,39,.62) 46% 54%,rgba(255,255,255,.62) 54% 100%);box-shadow:0 0 0 3px rgba(255,255,255,.55),0 0 12px rgba(239,68,68,.45);transform:translate(-50%,-50%);animation:inlineTownMapPulse 1.2s ease-out infinite;z-index:3;opacity:.72;pointer-events:none}
+  .inlineTownMapMarker:after{content:"";position:absolute;left:50%;top:50%;width:7px;height:7px;border:2px solid rgba(17,24,39,.72);border-radius:999px;background:rgba(255,255,255,.65);transform:translate(-50%,-50%)}
+  .inlineTownMapLabel{position:absolute;z-index:4;transform:translate(-50%,-128%);background:rgba(255,255,255,.88);border:1px solid rgba(17,24,39,.18);border-radius:999px;padding:5px 9px;font-size:13px;font-weight:700;color:#111827;white-space:nowrap;box-shadow:0 4px 12px rgba(15,23,42,.16);pointer-events:none}
+  .inlineTownMapNote{font-size:12px;color:var(--muted);margin:8px auto 0 auto;max-width:860px;line-height:1.35}
+  @keyframes inlineTownMapPulse{0%{box-shadow:0 0 0 3px rgba(255,255,255,.55),0 0 0 0 rgba(239,68,68,.42)}70%{box-shadow:0 0 0 3px rgba(255,255,255,.55),0 0 0 20px rgba(239,68,68,0)}100%{box-shadow:0 0 0 3px rgba(255,255,255,.55),0 0 0 0 rgba(239,68,68,0)}}
+  @media (max-width:600px){.locationTownMapPanel>summary{font-size:13px;padding:9px 10px}.inlineTownMapLabel{font-size:12px;max-width:70%;white-space:normal;text-align:center}.inlineTownMapMarker{width:21px;height:21px}.locationTownMapInner{padding:8px}}
+  @media (prefers-reduced-motion:reduce){.inlineTownMapMarker{animation:none!important}}

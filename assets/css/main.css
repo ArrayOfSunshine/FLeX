@@ -1,0 +1,819 @@
+
+:root{--bg:#f6f8fb;--card:#fff;--border:#d7deea;--text:#1f2937;--muted:#5f6b7a;--accent:#2f855a;--blue:#2563eb;}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+header{position:sticky;top:0;z-index:5;background:#ffffffee;backdrop-filter:blur(6px);border-bottom:1px solid var(--border);padding:14px 18px}
+h1{margin:0 0 8px 0;font-size:22px}
+.filterPanel{margin:6px 0 4px 0;border:1px solid var(--border);border-radius:10px;background:#fff;padding:0}
+.filterPanel>summary{cursor:pointer;font-weight:bold;color:var(--blue);padding:8px 10px;list-style:none}
+.filterPanel>summary::-webkit-details-marker{display:none}
+.filterPanel>summary:before{content:"▸ ";color:var(--muted)}
+.filterPanel[open]>summary:before{content:"▾ "}
+.filterPanel .controls{border-top:1px solid #edf1f7;padding:10px}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button,.filter{border:1px solid var(--border);background:#fff;border-radius:8px;padding:7px 10px;cursor:pointer;font-size:14px}
+button:hover,.filter:hover{background:#f0f4f8}
+.searchBox,.typeSelect{border:1px solid var(--border);background:#fff;border-radius:8px;padding:7px 10px;font-size:14px}
+.searchBox{min-width:190px}
+.typeSelect{min-width:135px}
+.stats{font-size:14px;color:var(--muted);margin-top:8px}
+.notice{font-size:12px;color:#6b7280;margin-top:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:12px;padding:16px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:10px;box-shadow:0 2px 5px #0000000d}
+.top{display:grid;grid-template-columns:62px 1fr;gap:10px;align-items:center}
+.sprite{width:60px;height:60px;image-rendering:pixelated;object-fit:contain}
+.num{font-size:12px;color:var(--muted)}
+.name{font-size:17px;font-weight:bold;margin:2px 0 6px}
+.types{display:flex;gap:4px;flex-wrap:wrap;margin:3px 0 7px}
+.type{font-size:11px;border-radius:999px;padding:2px 7px;border:1px solid #d1d5db;background:#f9fafb;text-transform:capitalize}
+.checks{display:flex;gap:10px;flex-wrap:wrap;font-size:13px}
+.checks input{transform:scale(1.15);margin-right:4px}
+.card details{margin-top:8px;border-top:1px solid #edf1f7;padding-top:7px}
+.card summary{cursor:pointer;color:var(--blue);font-weight:bold;font-size:13px}
+.obtain,.moves{font-size:13px;line-height:1.35;margin-top:6px;color:#374151}
+.badge{display:inline-block;font-size:11px;border-radius:999px;padding:2px 7px;margin-top:5px;background:#edf7f1;color:#166534;border:1px solid #bbdec9}
+.badge.no{background:#fff1f2;color:#9f1239;border-color:#fecdd3}
+.badge.trade{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}
+.hidden{display:none!important}
+.move-section{margin-top:8px}
+.move-title{font-weight:bold;margin-bottom:3px;color:#111827}
+.move-list{margin:0;padding-left:17px}
+.move-list li{margin:1px 0}
+.loading{color:#6b7280;font-style:italic}
+.error{color:#991b1b}
+footer{padding:14px 18px;color:var(--muted);font-size:12px}
+
+body.version-leafgreen{--version-soft:#ecfdf3;--version-border:#86efac;--version-strong:#166534}
+body.version-firered{--version-soft:#fff7ed;--version-border:#fdba74;--version-strong:#9a3412}
+body.version-leafgreen header,body.version-leafgreen .tabButton.active{background:linear-gradient(0deg,#ffffffee,#f0fdf4ee);border-color:var(--version-border)}
+body.version-firered header,body.version-firered .tabButton.active{background:linear-gradient(0deg,#ffffffee,#fff7edee);border-color:var(--version-border)}
+body.version-leafgreen .panel{box-shadow:0 2px 7px rgba(22,101,52,.08)}
+body.version-firered .panel{box-shadow:0 2px 7px rgba(154,52,18,.08)}
+
+
+.teamSlot{position:relative;overflow:hidden}
+.teamSlot:before{content:"";position:absolute;right:-8px;top:-18px;width:155px;height:155px;background-image:var(--team-sprite);background-repeat:no-repeat;background-position:center;background-size:contain;opacity:.22;image-rendering:pixelated;pointer-events:none}
+.teamSlot>*{position:relative;z-index:1}
+.teamSlot select,.teamSlot input{background-color:rgba(255,255,255,.72)}
+.teamSlot .moveTypeDisplay{background-color:rgba(249,250,251,.72)}
+
+
+.teamSlot.mode-mon{background:#ecfdf3;border-color:#bbf7d0}
+.teamSlot.mode-species{background:#fff7ed;border-color:#fed7aa}
+.teamModeRow{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0;font-size:13px}
+.teamSlot{border:1px solid var(--border);border-radius:12px;padding:10px}
+.teamSlot select{margin-top:4px}
+.teamMoveGrid{grid-template-columns:1fr 110px;margin-top:8px}
+.moveTypeDisplay{border:1px solid var(--border);border-radius:8px;padding:7px;width:100%;background:#f9fafb;color:#374151}
+
+
+.monFormPanel{border:1px solid var(--border);border-radius:14px;padding:12px;margin:12px 0;background:#f9fafb}.monCard{border:1px solid var(--border);border-radius:12px;padding:10px;margin:8px 0;background:#fff}
+.monCard{position:relative;overflow:hidden;min-height:112px}
+.monCard:before{content:"";position:absolute;right:-8px;top:-18px;width:155px;height:155px;background-image:var(--mon-sprite);background-repeat:no-repeat;background-position:center;background-size:contain;opacity:.22;image-rendering:pixelated;pointer-events:none}
+.monCard>*{position:relative;z-index:1}
+.monCardTitle{font-weight:bold;font-size:16px}.monMeta{font-size:13px;color:var(--muted);margin:3px 0}.monMoveGrid{grid-template-columns:1fr 110px}.myMonsSortControls{margin-top:10px}
+.ivGrid,.ivStatGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0}.ivGrid label,.ivStatGrid label{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:4px}.ivGrid input,.ivGrid select,.ivStatGrid input{border:1px solid var(--border);border-radius:8px;padding:8px;background:#fff;color:var(--text)}.ivAdvanced{margin:12px 0;border:1px solid var(--border);border-radius:10px;padding:8px;background:#f9fafb}.ivResultCard{border:1px solid var(--border);border-radius:12px;padding:10px;margin:8px 0;background:#f9fafb}.ivRange{font-weight:bold;font-size:18px}.ivNote{font-size:12px;color:var(--muted);margin-top:4px}
+
+.tabBar{display:flex;gap:8px;padding:10px 16px 0 16px;flex-wrap:wrap}
+.tabButton{border:1px solid var(--border);background:#fff;border-radius:10px;padding:9px 12px;cursor:pointer}
+.tabButton.active{background:#eff6ff;border-color:#93c5fd;color:#1d4ed8;font-weight:bold}
+.tabPage{display:none}.tabPage.active{display:block}
+.panel{margin:16px;padding:14px;background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:0 2px 5px #0000000d}
+.smallText{font-size:13px;color:var(--muted)}
+.extraTrack{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:7px;font-size:13px}
+.qtyInput{width:54px;border:1px solid var(--border);border-radius:7px;padding:4px 6px}
+.miniButton{font-size:12px;padding:4px 7px;border-radius:7px}
+.progressGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:10px 0 18px}
+.progressCard,.locItem,.plannerItem,.analysisBlock{border:1px solid var(--border);border-radius:12px;padding:10px;margin:8px 0;background:#f9fafb}
+.progressCard .big{font-size:24px;font-weight:bold;margin:4px 0}
+.progressBar{height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden}.progressFill{height:100%;background:#2563eb}
+.locName{font-weight:bold; cursor:pointer} details.locItem{padding:8px}
+.locRateBadge{display:inline-block;margin-left:6px;font-size:12px;color:#374151;background:#eef2ff;border:1px solid #c7d2fe;border-radius:999px;padding:2px 7px}
+.locDetail{border-top:1px solid #e5e7eb;margin-top:7px;padding-top:7px}
+.locSortBar{margin:6px 0;font-size:13px} .locSortBar select{margin-left:6px;padding:4px;border-radius:6px;border:1px solid var(--border)} .locations{font-size:13px;line-height:1.35;margin-top:6px;color:#374151}
+.locations .locSummary{border:1px solid var(--border);border-radius:10px;padding:8px;margin:6px 0;background:#f9fafb}
+.teamSlots{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-top:10px}
+.teamSlot select,.moveSelect{width:100%;border:1px solid var(--border);border-radius:8px;padding:8px}.moveGrid{display:grid;grid-template-columns:1fr 110px;gap:6px;margin-top:6px}.moveNameInput{border:1px solid var(--border);border-radius:8px;padding:7px;width:100%}.moveTypeDisplay{border:1px solid var(--border);border-radius:8px;padding:7px;width:100%;background:#f9fafb;color:#374151}
+.typePill{display:inline-block;margin:2px;padding:3px 8px;border:1px solid var(--border);border-radius:999px;background:#f9fafb;font-size:12px}
+
+
+#myMonsFilterPanel{margin-top:10px}
+#myMonsFilterPanel .moveNameInput{min-width:170px}
+
+.dexToolsWrap{padding:0 16px 8px 16px}.dexToolsWrap .filterPanel{margin-top:10px}
+
+/* Sticky horizontal tab strip */
+.tabBar{
+  position:sticky;
+  top:0;
+  z-index:50;
+  display:flex;
+  gap:0;
+  flex-wrap:nowrap;
+  overflow-x:auto;
+  padding:0 12px;
+  background:rgba(255,255,255,.96);
+  border-bottom:1px solid var(--border);
+  box-shadow:0 2px 8px rgba(15,23,42,.06);
+  -webkit-overflow-scrolling:touch;
+}
+.tabButton{
+  flex:0 0 auto;
+  border:0;
+  border-right:1px solid var(--border);
+  border-radius:0;
+  background:transparent;
+  padding:12px 14px;
+  cursor:pointer;
+  font-size:14px;
+  color:#374151;
+  white-space:nowrap;
+}
+.tabButton:first-child{border-left:1px solid var(--border)}
+.tabButton.active{
+  background:var(--version-soft,#eff6ff);
+  color:var(--version-strong,#1d4ed8);
+  font-weight:bold;
+  box-shadow:inset 0 -3px 0 var(--version-strong,#2563eb);
+}
+@media (max-width:600px){
+  .tabButton{font-size:13px;padding:11px 12px}
+}
+
+
+.dexToolsWrap{
+  position:sticky;
+  top:48px;
+  z-index:45;
+  display:grid;
+  grid-template-columns:minmax(230px,1fr) minmax(220px,auto);
+  gap:8px;
+  align-items:start;
+  padding:8px 16px;
+  background:rgba(255,255,255,.96);
+  border-bottom:1px solid var(--border);
+  box-shadow:0 2px 8px rgba(15,23,42,.05);
+  backdrop-filter:blur(6px);
+}
+.dexToolsWrap .filterPanel{
+  margin:0;
+}
+.activeFilterSummary{
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:8px 10px;
+  background:#fff;
+  font-size:13px;
+  color:#374151;
+  display:flex;
+  gap:8px;
+  align-items:center;
+  justify-content:space-between;
+}
+#activeDexFilters{
+  color:var(--muted);
+}
+@media (max-width:720px){
+  .dexToolsWrap{
+    top:44px;
+    grid-template-columns:1fr;
+  }
+  .activeFilterSummary{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+}
+
+
+#dexMoveFilter{min-width:170px}
+#backToTopButton{
+  position:fixed;
+  left:50%;
+  bottom:48px;
+  transform:translateX(-50%) translateY(12px);
+  z-index:80;
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:8px 14px;
+  background:rgba(255,255,255,.92);
+  color:#1f2937;
+  box-shadow:0 4px 14px rgba(15,23,42,.16);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .18s ease, transform .18s ease;
+  font-weight:600;
+}
+#backToTopButton.visible{
+  opacity:1;
+  pointer-events:auto;
+  transform:translateX(-50%) translateY(0);
+}
+
+
+.dexMoveFilterGroup{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
+  gap:6px;
+  min-width:min(680px,100%);
+}
+.dexMoveFilterInput{min-width:0}
+
+
+.dexFilterSections{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.dexFilterGroup{
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:8px;
+  background:#fff;
+}
+.dexFilterGroup h4{
+  margin:0 0 6px 0;
+  font-size:13px;
+  color:#374151;
+}
+.dexFilterGrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
+  gap:6px;
+}
+.dexFilterButtons{
+  grid-template-columns:repeat(auto-fit,minmax(135px,auto));
+}
+.dexFilterGrid button,
+.dexFilterGrid .buttonLike{
+  padding:7px 9px;
+  font-size:13px;
+  min-height:34px;
+}
+.dexFilterGrid input,
+.dexFilterGrid select,
+.dexMoveFilterGroup.compact input{
+  padding:7px 9px;
+  font-size:13px;
+  min-height:34px;
+}
+.dexMoveFilterGroup.compact{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
+  gap:6px;
+  margin-top:6px;
+}
+.hiddenDexTools{
+  display:none;
+}
+.buttonLike{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:#fff;
+  cursor:pointer;
+  color:#111827;
+}
+.buttonLike input{
+  display:none;
+}
+@media (max-width:720px){
+  .dexFilterGroup{padding:7px}
+  .dexFilterGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dexFilterButtons{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dexMoveFilterGroup.compact{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+
+.myMonsToolsWrap{
+  position:sticky;
+  top:48px;
+  z-index:45;
+  padding:8px 16px;
+  background:rgba(255,255,255,.96);
+  border-bottom:1px solid var(--border);
+  box-shadow:0 2px 8px rgba(15,23,42,.05);
+  backdrop-filter:blur(6px);
+}
+.myMonsToolsWrap .filterPanel{
+  margin:0;
+}
+.myMonsSortControls{
+  margin-top:8px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  align-items:center;
+}
+.myMonsSortControls button{
+  padding:7px 9px;
+  font-size:13px;
+  min-height:34px;
+}
+.myMonsFilterActions{
+  margin-top:6px;
+}
+@media (max-width:720px){
+  .myMonsToolsWrap{top:44px}
+}
+
+
+/* My Mon's filter area aligned with Dex filter placement */
+.myMonsToolsWrap{
+  position:sticky;
+  top:48px;
+  z-index:45;
+  display:block;
+  padding:8px 16px;
+  background:rgba(255,255,255,.96);
+  border-bottom:1px solid var(--border);
+  box-shadow:0 2px 8px rgba(15,23,42,.05);
+  backdrop-filter:blur(6px);
+}
+.myMonsToolsWrap .filterPanel{
+  margin:0;
+}
+.myMonsToolsWrap .dexFilterSections,
+.myMonsToolsWrap .dexFilterGroup,
+.myMonsToolsWrap .dexFilterGrid,
+.myMonsToolsWrap .dexMoveFilterGroup.compact,
+.myMonsToolsWrap .buttonLike{
+  box-sizing:border-box;
+}
+.myMonsSortControls{
+  margin-top:8px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  align-items:center;
+}
+.myMonsSortControls button{
+  padding:7px 9px;
+  font-size:13px;
+  min-height:34px;
+}
+.myMonsFilterActions{
+  margin-top:6px;
+}
+@media (max-width:720px){
+  .myMonsToolsWrap{top:44px}
+}
+
+
+/* My Mon's filter field styling aligned to Dex filter panel */
+.myMonsToolsWrap .dexFilterGrid input,
+.myMonsToolsWrap .dexFilterGrid select,
+.myMonsToolsWrap .dexMoveFilterGroup.compact input{
+  border:1px solid var(--border);
+  border-radius:4px;
+  background:#fff;
+  color:#111827;
+  padding:7px 9px;
+  min-height:34px;
+  box-shadow:none;
+}
+
+.myMonsToolsWrap .moveNameInput,
+.myMonsToolsWrap .searchBox,
+.myMonsToolsWrap .typeSelect{
+  border-radius:4px;
+}
+
+.myMonsToolsWrap .dexFilterGroup{
+  border-radius:4px;
+}
+
+.myMonsToolsWrap .filterPanel{
+  border-radius:4px;
+}
+
+.addMonStickyButton{
+  background:var(--version-soft,#eff6ff);
+  border:1px solid var(--version-border,#93c5fd);
+  color:var(--version-strong,#1d4ed8);
+  font-weight:700;
+}
+
+.addMonStickyButton:hover{
+  filter:brightness(.98);
+}
+
+
+/* My Mon's Dex-matched filter refinement */
+.myMonsToolsWrap .dexFilterGrid input,
+.myMonsToolsWrap .dexFilterGrid select,
+.myMonsToolsWrap .dexMoveFilterGroup.compact input{
+  border:1px solid #6b7280;
+  border-radius:3px;
+  background:#fff;
+  color:#111827;
+  padding:7px 9px;
+  min-height:34px;
+  box-shadow:none;
+  appearance:auto;
+}
+
+.myMonsToolsWrap .dexMoveFilterGroup.compact input{
+  border-color:var(--border);
+  border-radius:8px;
+}
+
+.myMonsToolsWrap .dexFilterGroup{
+  border-radius:10px;
+}
+
+.myMonsActiveFilterSummary{
+  margin-top:8px;
+}
+
+.myMonsSortControls{
+  margin-top:8px;
+}
+
+.addMonStickyButton{
+  background:var(--version-soft,#eff6ff);
+  border:1px solid var(--version-border,#93c5fd);
+  color:var(--version-strong,#1d4ed8);
+  font-weight:700;
+}
+
+
+.locSummaryLink{
+  width:100%;
+  text-align:left;
+  cursor:pointer;
+  border:1px solid var(--border);
+  background:#f9fafb;
+  color:inherit;
+  font:inherit;
+}
+.locSummaryLink:hover{
+  background:var(--version-soft,#eff6ff);
+  border-color:var(--version-border,#bfdbfe);
+}
+.locationJumpHighlight{
+  outline:2px solid var(--version-border,#93c5fd);
+  background:var(--version-soft,#eff6ff);
+}
+
+
+/* Swipe visual feedback */
+.tabPage{
+  transition:transform .16s ease, opacity .16s ease;
+  will-change:transform, opacity;
+}
+body.swiping-tab .tabPage.active{
+  transition:none;
+}
+#swipeIndicator{
+  position:fixed;
+  left:50%;
+  bottom:76px;
+  transform:translateX(-50%);
+  z-index:120;
+  min-width:160px;
+  max-width:78vw;
+  padding:8px 12px;
+  border:1px solid var(--version-border,#bfdbfe);
+  border-radius:999px;
+  background:rgba(255,255,255,.94);
+  color:var(--version-strong,#1d4ed8);
+  box-shadow:0 4px 16px rgba(15,23,42,.16);
+  font-size:13px;
+  font-weight:700;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .12s ease, transform .12s ease;
+  text-align:center;
+}
+#swipeIndicator.visible{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+#swipeIndicator .swipeTrack{
+  height:4px;
+  border-radius:999px;
+  background:#e5e7eb;
+  margin-top:5px;
+  overflow:hidden;
+}
+#swipeIndicator .swipeFill{
+  height:100%;
+  width:0%;
+  background:var(--version-strong,#2563eb);
+  border-radius:999px;
+}
+#swipeIndicator.ready{
+  background:var(--version-soft,#eff6ff);
+}
+
+
+#swipeIndicator{display:none!important}
+
+
+.monMeta b:first-child{color:#374151}
+
+
+.teamAnalysis .analysisBlock .smallText{line-height:1.45}
+
+.dexMyMonsButton:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+  background:#f3f4f6;
+  color:#6b7280;
+}
+
+.myMonRatingSummary{cursor:pointer;color:#1d4ed8;font-weight:bold}
+.myMonRatingSummary::-webkit-details-marker{display:none}
+.myMonRatingSummary:before{content:"▸ ";color:var(--muted)}
+.myMonRatingDetails[open]>.myMonRatingSummary:before{content:"▾ "}
+.myMonRatingDetails{margin:4px 0 6px 0;border-top:1px solid #edf1f7;padding-top:7px;background:transparent}
+.myMonRatingBreakdown{margin-top:6px;padding-top:4px}
+.myMonRatingRow{display:flex;justify-content:space-between;gap:10px;font-size:13px;margin:3px 0}
+.myMonRatingRow .ratingMissing{color:#991b1b;font-weight:bold}
+.myMonRatingNotes{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.35}.myMonRatingNotes ul{margin:3px 0 6px 18px;padding:0}.myMonRatingNotes li{margin:1px 0}
+
+/* Compact My Mon's toolbar while add/edit form is open */
+body.myMonFormActive .myMonsToolsWrap{
+  padding:5px 16px;
+}
+body.myMonFormActive .myMonsToolsWrap .filterPanel,
+body.myMonFormActive .myMonsToolsWrap .activeFilterSummary,
+body.myMonFormActive .myMonsToolsWrap .myMonsSortControls{
+  display:none!important;
+}
+body.myMonFormActive .myMonsToolsWrap:after{
+  content:"Editing Mon — filters and sorting hidden";
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+}
+.monFormPanel.formActiveFocus{
+  outline:2px solid var(--version-border,#93c5fd);
+  box-shadow:0 2px 12px rgba(15,23,42,.12);
+}
+
+
+
+/* Optional form/variant tracking */
+.variantGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:8px;margin-top:8px}
+.variantTile{border:1px solid var(--border);border-radius:10px;background:#f9fafb;padding:7px;text-align:center;font-size:12px}
+.variantTile img{width:42px;height:42px;object-fit:contain;image-rendering:pixelated;display:block;margin:0 auto 4px}
+.variantTile label{display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer}
+.variantProgressCard{background:var(--version-soft,#eff6ff);border-color:var(--version-border,#bfdbfe)}
+.variantProgressCard .big{color:var(--version-strong,#1d4ed8)}
+
+/* Header layering + bottom mirrored progress bar */
+header{z-index:1;transition:opacity .22s ease}
+header.headerFaded{opacity:0;pointer-events:none}
+.tabBar{z-index:90}
+.dexToolsWrap,.myMonsToolsWrap{z-index:75}
+#bottomProgressBar{position:fixed;left:0;right:0;bottom:0;z-index:95;min-height:24px;padding:4px 18px;background:rgba(255,255,255,.96);border-top:1px solid var(--version-border,var(--border));box-shadow:0 -2px 8px rgba(15,23,42,.06);backdrop-filter:blur(6px);font-size:13px;color:var(--muted);opacity:0;pointer-events:none;transition:opacity .22s ease}
+#bottomProgressBar.visible{opacity:1}
+body.version-leafgreen #bottomProgressBar{background:linear-gradient(0deg,#ffffffee,#f0fdf4ee);border-color:var(--version-border)}
+body.version-firered #bottomProgressBar{background:linear-gradient(0deg,#ffffffee,#fff7edee);border-color:var(--version-border)}
+body{padding-bottom:28px}
+
+
+/* Progress completion polish + sticky toolbar refinements */
+.variantProgressCard{background:#f9fafb!important;border-color:var(--border)!important}
+.variantProgressCard .big{color:inherit!important}
+.progressCard.progressComplete{
+  position:relative;
+  overflow:hidden;
+  background:var(--version-soft,#eff6ff);
+  border-color:var(--version-border,#bfdbfe);
+  box-shadow:0 2px 9px rgba(15,23,42,.08);
+}
+.progressCard.progressComplete .big{color:var(--version-strong,#1d4ed8)}
+.progressCard.progressComplete:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity:.16;
+  pointer-events:none;
+  background-image:
+    linear-gradient(90deg, transparent 0 10px, var(--version-strong,#2563eb) 10px 14px, transparent 14px 26px),
+    linear-gradient(0deg, transparent 0 8px, var(--version-border,#93c5fd) 8px 12px, transparent 12px 24px),
+    radial-gradient(circle at 18% 22%, var(--version-strong,#2563eb) 0 4px, transparent 5px),
+    radial-gradient(circle at 82% 30%, var(--version-border,#93c5fd) 0 5px, transparent 6px),
+    radial-gradient(circle at 68% 78%, var(--version-strong,#2563eb) 0 3px, transparent 4px);
+  background-size:52px 52px,44px 44px,100% 100%,100% 100%,100% 100%;
+  image-rendering:pixelated;
+}
+.progressCard.progressComplete:after{
+  content:"🎈  🎉";
+  position:absolute;
+  right:8px;
+  top:6px;
+  font-size:18px;
+  opacity:.42;
+  image-rendering:pixelated;
+}
+.progressCard.progressComplete>*{position:relative;z-index:1}
+
+/* Keep Dex/My Mon's toolbars flush under the tab strip */
+.dexToolsWrap,.myMonsToolsWrap{top:43px;margin-top:-1px}
+@media (max-width:600px){.dexToolsWrap,.myMonsToolsWrap{top:40px;margin-top:-1px}}
+
+/* Match My Mon's filter panel styling to Dex filters */
+.myMonsToolsWrap .filterPanel{border-radius:10px!important}
+.myMonsToolsWrap .dexFilterGroup{border-radius:10px!important}
+.myMonsToolsWrap .dexFilterGrid input,
+.myMonsToolsWrap .dexFilterGrid select,
+.myMonsToolsWrap .dexMoveFilterGroup.compact input,
+.myMonsToolsWrap .moveNameInput,
+.myMonsToolsWrap .searchBox,
+.myMonsToolsWrap .typeSelect{
+  border:1px solid var(--border)!important;
+  border-radius:8px!important;
+  background:#fff;
+  color:var(--text);
+  padding:7px 10px;
+  min-height:34px;
+  box-shadow:none;
+}
+.myMonsToolsWrap .activeFilterSummary{border-radius:10px!important}
+
+
+
+/* Progress card image celebration backgrounds + preview toggle */
+.progressCard.progressBgKantoDex{--progress-bg-image:url("../images/milestones/01-progress-bg-kanto-dex.jpg");}
+.progressCard.progressBgKantoLiving{--progress-bg-image:url("../images/milestones/02-progress-bg-kanto-living.png");}
+.progressCard.progressBgJohtoDex{--progress-bg-image:url("../images/milestones/03-progress-bg-johto-dex.png");}
+.progressCard.progressBgJohtoLiving{--progress-bg-image:url("../images/milestones/04-progress-bg-johto-living.png");}
+.progressCard.progressBgHoennDex{--progress-bg-image:url("../images/milestones/05-progress-bg-hoenn-dex.png");}
+.progressCard.progressBgHoennLiving{--progress-bg-image:url("../images/milestones/06-progress-bg-hoenn-living.png");}
+
+.progressCard.progressCelebration{
+  position:relative;
+  overflow:hidden;
+  background:var(--version-soft,#eff6ff);
+  border-color:var(--version-border,#bfdbfe);
+  box-shadow:0 2px 9px rgba(15,23,42,.08);
+}
+.progressCard.progressCelebration:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity:.48;
+  pointer-events:none;
+  background-image:var(--progress-bg-image);
+  background-repeat:no-repeat;
+  background-position:center bottom;
+  background-size:cover;
+  image-rendering:auto;
+  z-index:0;
+}
+.progressCard.progressCelebration:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(90deg,rgba(255,255,255,.88),rgba(255,255,255,.62) 56%,rgba(255,255,255,.34));
+  z-index:1;
+}
+.progressCard.progressCelebration>*{
+  position:relative;
+  z-index:2;
+}
+.progressCard.progressCelebration .big{
+  color:var(--version-strong,#1d4ed8);
+  text-shadow:0 1px 0 rgba(255,255,255,.65);
+}
+body.version-firered .progressCard.progressCelebration:after{
+  background:linear-gradient(90deg,rgba(255,255,255,.88),rgba(255,247,237,.62) 56%,rgba(255,247,237,.30));
+}
+body.version-leafgreen .progressCard.progressCelebration:after{
+  background:linear-gradient(90deg,rgba(255,255,255,.88),rgba(240,253,244,.62) 56%,rgba(240,253,244,.30));
+}
+
+
+/* Move List tab */
+.moveListResults{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:10px;margin-top:10px}
+.moveListCard{border:1px solid var(--border);border-radius:12px;padding:10px;background:#f9fafb;scroll-margin-top:110px}
+.moveListCard h3{margin:0 0 7px 0;font-size:16px}
+.moveMetaGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;font-size:13px;margin:6px 0}
+.moveMetaGrid span{border:1px solid var(--border);border-radius:999px;background:#fff;padding:3px 7px}
+.moveDescription{font-size:13px;line-height:1.35;margin-top:7px;color:#374151}
+.moveEffect{font-size:12px;line-height:1.35;margin-top:6px;color:var(--muted)}
+.moveListJumpButton,.moveInlineLink{border:0;background:transparent;color:var(--blue);padding:0;cursor:pointer;font:inherit;text-decoration:underline;text-underline-offset:2px}
+.moveInlineLink:hover,.moveListJumpButton:hover{background:transparent;color:#1e40af}
+.eggMoveLine{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.eggDonorToggle{font-size:11px;padding:2px 6px;border-radius:999px}
+.progressCard.progressBgUnownVariants{--progress-bg-image:url("../images/milestones/07-progress-bg-unown-variants.jpg");}
+
+
+
+/* Early boot overlay: keep the app hidden until the Pokédex opens */
+body.pokedexBootPending > :not(#pokedexBootOverlay):not(script):not(style){visibility:hidden!important;}
+body.pokedexBootPending{overflow:hidden;}
+#pokedexBootOverlay{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#101827;
+  pointer-events:none;
+  overflow:hidden;
+  opacity:1;
+  transition:opacity .28s ease;
+}
+#pokedexBootOverlay.bootDone{opacity:0;}
+.pokedexBootHalf{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:50.5%;
+  background:linear-gradient(135deg,#b91c1c,#ef4444 48%,#991b1b);
+  box-shadow:inset 0 0 0 3px rgba(255,255,255,.18), inset 0 0 28px rgba(0,0,0,.35);
+  transition:transform .78s cubic-bezier(.22,.88,.2,1);
+}
+.pokedexBootHalf.left{left:0;transform-origin:left center;border-right:4px solid #7f1d1d;}
+.pokedexBootHalf.right{right:0;transform-origin:right center;border-left:4px solid #7f1d1d;}
+#pokedexBootOverlay.opening .pokedexBootHalf.left{transform:perspective(900px) rotateY(72deg) translateX(-18%);}
+#pokedexBootOverlay.opening .pokedexBootHalf.right{transform:perspective(900px) rotateY(-72deg) translateX(18%);}
+.pokedexBootHinge{
+  position:absolute;
+  left:50%;top:0;bottom:0;width:10px;transform:translateX(-50%);
+  background:linear-gradient(90deg,#450a0a,#fecaca,#450a0a);
+  box-shadow:0 0 12px rgba(0,0,0,.35);
+  transition:opacity .35s ease;
+}
+#pokedexBootOverlay.opening .pokedexBootHinge{opacity:.2;}
+.pokedexBootLens{
+  position:absolute;
+  left:24px;top:22px;
+  width:66px;height:66px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#e0f2fe 0 18%,#38bdf8 19% 48%,#0369a1 49% 72%,#082f49 73% 100%);
+  border:5px solid #f8fafc;
+  box-shadow:0 0 0 5px rgba(15,23,42,.32),0 0 22px rgba(56,189,248,.55);
+}
+.pokedexBootLights{position:absolute;left:104px;top:28px;display:flex;gap:10px;}
+.pokedexBootLights span{width:17px;height:17px;border-radius:50%;border:2px solid rgba(15,23,42,.42);box-shadow:inset 0 2px 4px rgba(255,255,255,.5);}
+.pokedexBootLights span:nth-child(1){background:#ef4444}.pokedexBootLights span:nth-child(2){background:#facc15}.pokedexBootLights span:nth-child(3){background:#22c55e}
+.pokedexBootScreen{
+  position:relative;
+  z-index:1;
+  width:min(420px,76vw);
+  min-height:205px;
+  border:8px solid #e5e7eb;
+  border-radius:18px;
+  background:linear-gradient(180deg,#d1fae5,#86efac);
+  box-shadow:0 10px 28px rgba(0,0,0,.35), inset 0 0 0 4px rgba(22,101,52,.18);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:9px;
+  padding:18px 16px;
+  transform:scale(.98);
+  transition:transform .45s ease, opacity .35s ease;
+}
+#pokedexBootOverlay.opening .pokedexBootScreen{transform:scale(1.04);opacity:.18;}
+.pokedexBootTitle{font-weight:800;color:#064e3b;letter-spacing:.04em;text-align:center;font-size:clamp(20px,5vw,32px);}
+.pokedexBootSub{font-size:13px;color:#166534;text-align:center;line-height:1.35;max-width:330px;}
+.pokedexBootSpinner,.spinningPokeball{
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  position:relative;
+  border:4px solid #111827;
+  background:linear-gradient(to bottom,#ef4444 0 46%,#111827 47% 53%,#f9fafb 54% 100%);
+  box-shadow:0 4px 12px rgba(15,23,42,.28);
+  animation:pokeballSpin .78s linear infinite;
+}
+.pokedexBootSpinner:before,.spinningPokeball:before{
+  content:"";
+  position:absolute;
+  left:50%;top:50%;
+  width:20px;height:20px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:#f9fafb;
+  border:4px solid #111827;
+  box-shadow:inset 0 0 0 3px #e5e7eb;
+}
+.pokedexBootScan{width:70%;height:8px;border-radius:999px;background:#dcfce7;overflow:hidden;border:1px solid rgba(22,101,52,.28);}
+.pokedexBootScan:before{content:"";display:block;width:36%;height:100%;border-radius:999px;background:#16a34a;animation:pokedexBootScan 1s ease-in-out infinite alternate;}
+.globalLoadProgress{font-size:13px;color:#374151;line-height:1.35;margin-top:8px;max-width:min(560px,84vw);white-space:normal;}
+.globalLoadCard .spinningPokeball{margin:0 auto 12px;width:74px;height:74px;}
+.globalLoadCard .spinningPokeball:before{width:26px;height:26px;box-shadow:inset 0 0 0 4px #e5e7eb;}
+@keyframes pokedexBootScan{from{transform:translateX(-10%)}to{transform:translateX(190%)}}
+@keyframes pokeballSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){
+  .pokedexBootHalf,#pokedexBootOverlay,.pokedexBootScreen{transition:none!important;}
+  .spinningPokeball,.pokedexBootSpinner,.pokedexBootScan:before{animation:none!important;}
+}
+
+
+/* FLéX version-aware branding */
+.flexBrandF{color:#9a3412;}
+.flexBrandL{color:#166534;}
+.flexBrandVersion.firered{color:#9a3412;}
+.flexBrandVersion.leafgreen{color:#166534;}
+.flexBrandF,.flexBrandL,.flexBrandVersion{font-weight:800;}
+.pokedexBootTitle .flexBrandF,.pokedexBootTitle .flexBrandL{font-weight:900;}
