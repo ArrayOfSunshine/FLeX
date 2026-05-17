@@ -182,16 +182,39 @@
     return previousGetMoveMeta ? previousGetMoveMeta(move) : null;
   };
 
+  function isTabActive(id){
+    var el = document.getElementById(id);
+    return !!(el && el.classList && el.classList.contains("active"));
+  }
+
+  function ensurePrebuiltForFeature(reason){
+    status(reason ? ("Loading " + reason + " data…") : "Loading static data…");
+    return ensurePrebuilt().then(function(){
+      status("Static FLéX data loaded from /data.");
+      return true;
+    }).catch(function(e){
+      console.warn("Prebuilt static data bridge unavailable", e);
+      throw e;
+    });
+  }
+
   var previousRenderMoveList = window.renderMoveList;
   if(typeof previousRenderMoveList === "function"){
-    window.renderMoveList = function(){return previousRenderMoveList.apply(this, arguments);};
+    window.renderMoveList = function(){
+      var result = previousRenderMoveList.apply(this, arguments);
+      if(isTabActive("moveListTab") && !prebuiltReady){
+        ensurePrebuiltForFeature("move metadata").then(function(){try{previousRenderMoveList();}catch(e){}}).catch(function(){});
+      }
+      return result;
+    };
   }
 
   window.loadEncounterData = async function(force){
     var container = document.getElementById("locationResults");
     if(container && !window.ENCOUNTER_LOCATION_DATA) container.innerHTML = '<p class="smallText">Loading prebuilt FLéX encounter data…</p>';
     try{
-      var data = await ensurePrebuilt();
+      var data = await ensurePrebuiltForFeature("encounter");
+      data = await ensurePrebuilt();
       var built = buildLocationDataFromPrebuilt(data, currentVersion());
       ENCOUNTER_LOCATION_DATA = built;
       window.ENCOUNTER_LOCATION_DATA = built;
@@ -209,19 +232,22 @@
   var previousInitLocations = window.initLocations;
   window.initLocations = function(){
     if(previousInitLocations) previousInitLocations.apply(this, arguments);
-    window.loadEncounterData(false);
+    if(isTabActive("locationTab")) window.loadEncounterData(false);
   };
 
-  function finish(){
-    ensurePrebuilt().then(function(){
-      status("Prebuilt FLéX data loaded. Move metadata and encounters are using /data JSON.");
-      try{if(typeof window.renderMoveList === "function") window.renderMoveList();}catch(e){}
-      try{if(typeof applyFilter === "function") applyFilter();}catch(e){}
-      try{if(typeof renderMyMons === "function") renderMyMons();}catch(e){}
-      var locTab=document.getElementById("locationTab");
-      if(locTab && locTab.classList.contains("active")) window.loadEncounterData(false);
-    }).catch(function(e){console.warn("Prebuilt static data bridge unavailable", e);});
+  var previousShowTab = window.showTab;
+  if(typeof previousShowTab === "function" && !previousShowTab.__flexLazyPrebuiltWrapped){
+    window.showTab = function(tabId){
+      var result = previousShowTab.apply(this, arguments);
+      if(tabId === "moveListTab"){
+        ensurePrebuiltForFeature("move metadata").then(function(){try{if(typeof window.renderMoveList === "function") window.renderMoveList();}catch(e){}}).catch(function(){});
+      }
+      if(tabId === "locationTab") window.loadEncounterData(false);
+      return result;
+    };
+    window.showTab.__flexLazyPrebuiltWrapped = true;
   }
-  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", finish); else setTimeout(finish,0);
-  window.addEventListener("load", function(){setTimeout(finish,250);});
+
+  window.ensureFlexPrebuiltData = ensurePrebuilt;
+  status("Static JSON will load when Move List or Locations are opened.");
 })();
